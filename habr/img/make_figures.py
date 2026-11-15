@@ -88,22 +88,24 @@ def alpha_knob() -> None:
     plt.close(fig)
 
 
-def labeling() -> None:
-    rng = np.random.default_rng(7)
-    points = rng.uniform(0, 10, size=(160, 2))
-    source = np.array([5.0, 5.0])
-    distance = np.linalg.norm(points - source, axis=1)
-    fig, ax = plt.subplots(figsize=(6.4, 5.4))
-    scatter = ax.scatter(points[:, 0], points[:, 1], c=distance, cmap="viridis", s=28)
-    targets = rng.choice(len(points), size=12, replace=False)
-    ax.scatter(points[targets, 0], points[targets, 1], facecolors="none", edgecolors=ORANGE, s=140, linewidths=2, label="отобранные цели")
-    ax.plot(*source, "o", color="red", markersize=12, label="вершина v, момент τ")
-    fig.colorbar(scatter, ax=ax, label="точное время в пути из v")
-    ax.set_title("Один запуск TD-Dijkstra размечает весь граф")
-    ax.axis("off")
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.12), ncol=2, frameon=False, fontsize=10)
+def cover() -> None:
+    hours = np.linspace(0, 24, 600)
+    free_flow = 4.0
+    minutes = free_flow * (1 + peak(hours, 8.5, 1.2, 1.4) + peak(hours, 18.5, 1.5, 1.1))
+    fig, ax = plt.subplots(figsize=(7.8, 4.4))
+    ax.plot(hours, minutes, color=BLUE, linewidth=4)
+    ax.axhline(free_flow, color=GREY, linestyle="--", linewidth=2)
+    ax.fill_between(hours, free_flow, minutes, color=BLUE, alpha=0.15)
+    ax.set_xlim(0, 24)
+    ax.set_ylim(2.8, 11)
+    ax.set_xticks([0, 6, 12, 18, 24], ["00:00", "06:00", "12:00", "18:00", "24:00"])
+    ax.set_yticks([])
+    ax.spines["left"].set_visible(False)
+    ax.text(8.5, 10.1, "8:30", ha="center", color=BLUE, fontsize=16)
+    ax.text(18.5, 8.9, "18:30", ha="center", color=BLUE, fontsize=16)
+    ax.text(2.5, 4.35, "ночью", ha="center", color=GREY, fontsize=13)
     fig.tight_layout()
-    fig.savefig(OUT / "04-labeling.png", dpi=160)
+    fig.savefig(OUT / "00-cover.png", dpi=200)
     plt.close(fig)
 
 
@@ -111,4 +113,4 @@ if __name__ == "__main__":
     travel_time_profile()
     search_areas()
     alpha_knob()
-    labeling()
+    cover()
