@@ -1,0 +1,13 @@
+[project]
+name = "habr-experiment"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "osmnx>=2.0",
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "matplotlib",
+    "pandas",
+    "numba>=0.68.1",
+]
