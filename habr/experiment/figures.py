@@ -39,18 +39,19 @@ def tradeoff(df: pd.DataFrame) -> None:
         d = df[df.slot.isin(slots)]
         alt = gmean(d[d.method == "A* (ALT)"].speedup)
         ax.scatter([0], [alt], color="black", zorder=5, s=60)
-        ax.annotate("обычный A*", (0, alt), xytext=(xmax * 0.04, alt + 0.6))
+        ax.annotate("обычный A*", (0, alt), xytext=(xmax * 0.18, alt - 0.3 if alt < 5 else alt - 2.5),
+                    arrowprops={"arrowstyle": "->", "color": GREY}, va="center")
         for name, color, label in [("взвешенный A*", GREY, "постоянный вес"), ("почасовой множитель", GREEN, "множитель по времени суток"),
                                    (f"нейросеть {NET}", ORANGE, "нейросетевая поправка")]:
             g = d[d.method == name].groupby("param").agg(sp=("speedup", gmean), err=("err", "mean")).reset_index()
-            ax.plot(g.err * 100, g.sp, "o-", color=color, linewidth=2.5, label=label)
+            ax.plot(np.r_[0, g.err * 100], np.r_[alt, g.sp], "o-", color=color, linewidth=2.5, label=label, markersize=5)
         ax.set_xlim(-0.05 * xmax, xmax)
         ax.set_xlabel("средняя ошибка времени маршрута, %")
         ax.set_title(title)
     axes[0].set_ylabel("во сколько раз меньше\nраскрытых вершин, чем у Дейкстры")
-    axes[0].legend(frameon=False, loc="lower right", fontsize=10)
+    axes[0].legend(frameon=False, loc="lower right", fontsize=10, bbox_to_anchor=(1.0, 0.08))
     fig.tight_layout()
-    fig.savefig(IMG / "05-tradeoff.png", dpi=160)
+    fig.savefig(IMG / "03-tradeoff.png", dpi=160)
     plt.close(fig)
 
 
@@ -70,7 +71,7 @@ def by_slot(df: pd.DataFrame) -> None:
     ax.set_ylim(0, 17.5)
     ax.legend(frameon=False, loc="upper center", ncol=3, fontsize=10, bbox_to_anchor=(0.5, 1.02))
     fig.tight_layout()
-    fig.savefig(IMG / "06-by-slot.png", dpi=160)
+    fig.savefig(IMG / "02-by-slot.png", dpi=160)
     plt.close(fig)
 
 
@@ -113,7 +114,7 @@ def search_map() -> None:
         print(title, res.expanded, round(res.arrival / 60, 1))
     fig.tight_layout()
     fig.subplots_adjust(top=0.86)
-    fig.savefig(IMG / "07-map.png", dpi=150)
+    fig.savefig(IMG / "04-map.png", dpi=150)
     plt.close(fig)
 
 

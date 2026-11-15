@@ -5,7 +5,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.patches import Circle, Ellipse
 
 OUT = Path(__file__).resolve().parent
 BLUE = "#2f6db5"
@@ -41,53 +40,6 @@ def travel_time_profile() -> None:
     plt.close(fig)
 
 
-def search_areas() -> None:
-    fig, ax = plt.subplots(figsize=(8, 6.2))
-    start, goal = np.array([1.5, 2.3]), np.array([6.5, 2.3])
-    ax.add_patch(Circle(start, 5.0, color=GREY, alpha=0.15, label="Дейкстра: во все стороны"))
-    ax.add_patch(Ellipse((4.0, 2.3), 6.9, 3.4, color=BLUE, alpha=0.22, label="A* с нижней оценкой в час пик"))
-    ax.add_patch(Ellipse((4.0, 2.3), 5.9, 1.4, color=ORANGE, alpha=0.35, label="A* с уточнённой оценкой"))
-    ax.plot(*start, "o", color="black", markersize=9)
-    ax.plot(*goal, "*", color="black", markersize=16)
-    ax.text(start[0] - 0.2, start[1] - 0.45, "старт", ha="center")
-    ax.text(goal[0] + 0.1, goal[1] - 0.5, "цель", ha="center")
-    ax.set_xlim(-3.7, 9)
-    ax.set_ylim(-2.9, 7.5)
-    ax.set_aspect("equal")
-    ax.axis("off")
-    ax.set_title("Чем точнее оценка оставшегося пути, тем уже область поиска (схема)")
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.16), ncol=1, frameon=False, fontsize=10)
-    fig.tight_layout()
-    fig.savefig(OUT / "02-search-area.png", dpi=160)
-    plt.close(fig)
-
-
-def alpha_knob() -> None:
-    alphas = np.linspace(0, 1, 200)
-    lower_bound = 10.0
-    true_time = 16.0
-    prediction = 17.5
-    heuristic = lower_bound * np.exp(alphas * np.log(prediction / lower_bound))
-    fig, ax = plt.subplots(figsize=(8, 4.2))
-    ax.plot(alphas, heuristic, color=ORANGE, linewidth=2.5, label="оценка h_α")
-    ax.axhline(true_time, color=GREEN, linestyle="--", label="настоящее оставшееся время")
-    ax.axhline(lower_bound, color=GREY, linestyle=":", label="нижняя оценка (свободное движение)")
-    crossing = float(np.log(true_time / lower_bound) / np.log(prediction / lower_bound))
-    ax.axvspan(0, crossing, color=GREEN, alpha=0.08)
-    ax.axvspan(crossing, 1, color=ORANGE, alpha=0.08)
-    ax.text(crossing / 2, 18.2, "не завышает:\nмаршрут оптимален", ha="center", fontsize=10)
-    ax.text((crossing + 1) / 2, 18.2, "завышает:\nбыстрее, но\nвозможна ошибка", ha="center", fontsize=10)
-    ax.set_xlim(0, 1)
-    ax.set_ylim(8, 20.5)
-    ax.set_xlabel("α — доля нейросетевой поправки")
-    ax.set_ylabel("оценка, мин")
-    ax.set_title("Ручка α на одной паре вершин (иллюстрация)")
-    ax.legend(loc="lower right", frameon=False, fontsize=10)
-    fig.tight_layout()
-    fig.savefig(OUT / "03-alpha.png", dpi=160)
-    plt.close(fig)
-
-
 def cover() -> None:
     hours = np.linspace(0, 24, 600)
     free_flow = 4.0
@@ -111,6 +63,4 @@ def cover() -> None:
 
 if __name__ == "__main__":
     travel_time_profile()
-    search_areas()
-    alpha_knob()
     cover()
