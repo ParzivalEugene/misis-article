@@ -139,6 +139,33 @@ def search_gif(g, lm, model) -> None:
     plt.close(fig)
 
 
+def cover(g, lm, model) -> None:
+    """Обложка 780×440 (×2): весь перебор Дейкстры и узкий коридор A* с поправкой на тёмной карте."""
+    s = int(np.argmin((g.x + 11) ** 2 + (g.y - 9) ** 2))
+    t = int(np.argmin((g.x - 10) ** 2 + (g.y + 9) ** 2))
+    tau = 8.5 * 3600
+    lb = alt_bound(lm, t)
+    rd = td_search(g, s, t, tau, None, keep_settled=True)
+    rn = td_search(g, s, t, tau, make_nn(g, lb, t, model, 1.0), keep_settled=True)
+    bg = "#0e141b"
+    fig = plt.figure(figsize=(7.8, 4.4), facecolor=bg)
+    ax = fig.add_axes([0, 0, 1, 1], facecolor=bg)
+    ax.add_collection(LineCollection(segments(g), colors="#26313d", linewidths=0.45))
+    d, n = np.array(rd.settled), np.array(rn.settled)
+    ax.scatter(g.x[d], g.y[d], s=1.6, color="#3b82c4", alpha=0.45, linewidths=0)
+    ax.scatter(g.x[n], g.y[n], s=3.2, color="#ff8a3d", alpha=0.95, linewidths=0)
+    ax.plot(g.x[s], g.y[s], "o", color="white", markersize=7)
+    ax.plot(g.x[t], g.y[t], "*", color="white", markersize=13)
+    cx, cy = (g.x[s] + g.x[t]) / 2, (g.y[s] + g.y[t]) / 2
+    half_h = 13.0
+    ax.set_xlim(cx - half_h * 780 / 440, cx + half_h * 780 / 440)
+    ax.set_ylim(cy - half_h, cy + half_h)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    fig.savefig(IMG / "00-cover.png", dpi=200, facecolor=bg)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     g = load_graph()
     lm = build_landmarks(g)
@@ -152,5 +179,8 @@ if __name__ == "__main__":
         table_curve()
     if "length" in which:
         by_length()
+    if "cover" in which:
+        cover(g, lm, model)
     if "gif" in which:
         search_gif(g, lm, model)
+
