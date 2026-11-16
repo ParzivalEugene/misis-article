@@ -51,7 +51,7 @@ def tradeoff(df: pd.DataFrame) -> None:
     axes[0].set_ylabel("во сколько раз меньше\nраскрытых вершин, чем у Дейкстры")
     axes[0].legend(frameon=False, loc="lower right", fontsize=10, bbox_to_anchor=(1.0, 0.08))
     fig.tight_layout()
-    fig.savefig(IMG / "03-tradeoff.png", dpi=160)
+    fig.savefig(IMG / "06-tradeoff.png", dpi=160)
     plt.close(fig)
 
 
@@ -71,7 +71,7 @@ def by_slot(df: pd.DataFrame) -> None:
     ax.set_ylim(0, 17.5)
     ax.legend(frameon=False, loc="upper center", ncol=3, fontsize=10, bbox_to_anchor=(0.5, 1.02))
     fig.tight_layout()
-    fig.savefig(IMG / "02-by-slot.png", dpi=160)
+    fig.savefig(IMG / "03-by-slot.png", dpi=160)
     plt.close(fig)
 
 
@@ -114,7 +114,7 @@ def search_map() -> None:
         print(title, res.expanded, round(res.arrival / 60, 1))
     fig.tight_layout()
     fig.subplots_adjust(top=0.86)
-    fig.savefig(IMG / "04-map.png", dpi=150)
+    fig.savefig(IMG / "08-map.png", dpi=150)
     plt.close(fig)
 
 
